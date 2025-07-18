@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .db import get_connection
 
+
     
 class SignupAPI(APIView):
     def post(self,request):
@@ -56,3 +57,20 @@ class LoginAPI(APIView):
             return Response({"error": "User not found."}, status=404)
 
 
+
+class ForgetpwAPI(APIView):
+    def post(self, request):
+        password = request.data.get('password')
+        email = request.data.get('email')
+
+        conn = get_connection()
+        cursor = conn.cursor()
+
+
+        # Update the password
+        cursor.execute("UPDATE users SET password = %s WHERE email = %s", [password, email])
+        conn.commit()
+        conn.close()
+
+        return Response({"message": "Password changed successfully"}, status=200)
+    
